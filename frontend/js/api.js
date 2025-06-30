@@ -177,6 +177,10 @@ function getMonthlySummaries() {
   return fetchAPI('/finances/monthly-summaries');
 }
 
+function getAvailableMonths() {
+  return fetchAPI('/finances/available-months');
+}
+
 function getTransactionsForMonth(month) { // format RRRR-MM
   return fetchAPI(`/finances/transactions?month=${month}`);
 }
