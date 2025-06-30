@@ -13,7 +13,9 @@
         <nav>
             <button id="nav-patients-btn" class="nav-btn active">Pacjenci</button>
             <button id="nav-warehouse-btn" class="nav-btn">Magazyn</button>
-            <button id="nav-finance-btn" class="nav-btn">Finanse</button> </nav>
+            <button id="nav-finance-btn" class="nav-btn">Finanse</button>
+            <button id="nav-finance-history-btn" class="nav-btn">Historia</button>
+        </nav>
         </nav>
     </header>
 
@@ -167,8 +169,25 @@
             </section>
         </div>
 
+        <div id="finance-history-view-container" class="view-container hidden">
+            <section class="panel">
+                <h2>Historia Transakcji</h2>
+                <div class="form-row">
+                    <select id="finance-year-select"></select>
+                    <select id="finance-month-select"></select>
+                    <button id="show-history-btn">Pokaż</button>
+                </div>
+                <div id="finance-history-summary"></div>
+                <hr>
+                <table class="data-table">
+                    <thead><tr><th>Data</th><th>Pacjent</th><th>Suma</th></tr></thead>
+                    <tbody id="finance-history-table"></tbody>
+                </table>
+            </section>
+        </div>
 
-    </main>
+
+        </main>
 
     <div id="swap-aparat-modal" class="modal-backdrop hidden">
         <div class="modal-content">

@@ -860,6 +860,15 @@ def get_monthly_summaries():
     """)
     return jsonify([dict(row) for row in cursor.fetchall()])
 
+@app.route('/api/finances/available-months', methods=['GET'])
+def get_available_months():
+    """Zwraca listę miesięcy, dla których istnieją transakcje."""
+    db = get_db()
+    cursor = db.execute(
+        "SELECT DISTINCT strftime('%Y-%m', data_transakcji) as miesiac FROM Transakcje ORDER BY miesiac DESC"
+    )
+    return jsonify([row['miesiac'] for row in cursor.fetchall()])
+
 @app.route('/api/finances/transactions', methods=['GET'])
 def get_transactions_for_month():
     """Zwraca listę transakcji dla danego miesiąca (w formacie RRRR-MM)."""
