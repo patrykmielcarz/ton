@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Generator Audiogramu</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background-color: #f0f0f0; }
+        .container { background-color: white; padding: 20px; border-radius: 8px; display: inline-block; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        canvas { border: 1px solid black; cursor: crosshair; }
+        .controls, .patient-data { margin: 1rem auto; display: flex; justify-content: center; gap: 10px; align-items: center; }
+        button { font-size: 1rem; padding: 0.5rem 1rem; cursor: pointer; }
+        input { padding: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generator Audiogramu AAD-80</h1>
+        <p>Pierwsze 6 kliknięć na każdej ze stron to przewodnictwo powietrzne. Każde kolejne to przewodnictwo kostne.</p>
+        
+        <canvas id="audiogramCanvas" width="500" height="500"></canvas>
+        
+        <div class="patient-data">
+            <input type="text" id="patientName" placeholder="Imię i nazwisko">
+            <input type="text" id="patientPesel" placeholder="PESEL">
+            <input type="text" id="performedBy" placeholder="Wykonał" value="Kawecka">
+        </div>
+
+        <div class="controls">
+            <button id="generateBtn">Generuj i pobierz obraz</button>
+            <button id="clearBtn">Wyczyść audiogramy</button>
+        </div>
+    </div>
+
+    <script src="js/audiogram.js"></script>
+</body>
+</html>

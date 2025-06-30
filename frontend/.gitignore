@@ -1,0 +1,14 @@
+# Środowisko wirtualne Pythona
+.venv/
+venv/
+
+# Pliki cache Pythona
+__pycache__/
+*.pyc
+
+# Baza danych SQLite
+*.db
+*.db-journal
+
+# Pliki systemowe macOS
+.DS_Store

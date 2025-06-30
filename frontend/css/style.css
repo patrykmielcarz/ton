@@ -1,0 +1,320 @@
+:root {
+    --primary-color: #005a9c;
+    --secondary-color: #f0f8ff;
+    --border-color: #ccc;
+    --text-color: #333;
+    --background-color: #f4f4f4;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.main-container {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    align-items: flex-start;
+}
+
+.panel {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#patient-list-container {
+    flex-basis: 400px; /* Ustaw sztywną szerokość początkową dla listy pacjentów */
+    flex-shrink: 0;   /* Nie pozwalaj tej kolumnie się kurczyć */
+}
+
+.hidden {
+    display: none !important;
+}
+
+#patient-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#patient-detail-container, 
+#add-patient-form-container,
+#inventory-container {
+    flex-grow: 1; /* Pozwól prawemu panelowi rosnąć i wypełniać resztę dostępnej przestrzeni */
+}
+
+#patient-list li {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#patient-list li:hover {
+    background-color: var(--secondary-color);
+}
+
+#patient-list li.active {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+}
+
+.patient-card h2, .patient-card h3 {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #004170;
+}
+
+.btn-success { background-color: var(--success-color); }
+.btn-warning { background-color: var(--warning-color); color: var(--text-color); }
+.btn-danger { background-color: var(--danger-color); }
+
+.equipment-list, .inventory-item-list {
+    list-style-type: none;
+    padding: 0;
+}
+.equipment-list li, .inventory-item-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.status {
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+.status-wydany { background-color: var(--success-color); color: white; }
+.status-zarezerwowany { background-color: var(--warning-color); color: var(--text-color); }
+.status-zamowione { background-color: var(--danger-color); color: white; }
+
+/* Style dla nawigacji */
+nav {
+    background-color: #e9ecef;
+    padding: 0.5rem;
+    text-align: center;
+}
+.nav-btn {
+    background-color: #6c757d;
+    margin: 0 0.5rem;
+}
+.nav-btn.active {
+    background-color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* Style dla tabeli magazynu */
+#warehouse-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+#warehouse-table th, #warehouse-table td {
+    border: 1px solid var(--border-color);
+    padding: 0.75rem;
+    text-align: left;
+}
+#warehouse-table th {
+    background-color: var(--secondary-color);
+}
+#warehouse-table td:nth-child(n+2) {
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Style dla formularza dodawania */
+#add-stock-form {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+#add-stock-form select, #add-stock-form input {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+#add-stock-form select { flex: 3; }
+#add-stock-form input { flex: 1; }
+#add-stock-form button { flex: 1; }
+
+.sub-nav {
+    border-bottom: 2px solid var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+.sub-nav-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: transparent;
+    color: var(--text-color);
+    border-radius: 5px 5px 0 0;
+}
+.sub-nav-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+.data-table th, .data-table td {
+    border: 1px solid var(--border-color);
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.modal-content.image-modal {
+    width: auto;
+    max-width: 90%;
+    max-height: 90%;
+    padding: 1rem;
+    background-color: #333;
+}
+#modal-image-content {
+    display: block;
+    max-width: 100%;
+    max-height: calc(100vh - 100px); /* Ogranicz wysokość obrazka */
+}
+#close-image-modal-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+#warehouse-search-input {
+    width: calc(100% - 2rem);
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-btn {
+    background-color: #f8f9fa;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+}
+
+.expand-details-btn {
+    text-decoration: underline;
+    color: var(--primary-color);
+    cursor: pointer;
+}
+.transaction-details-cell {
+    background-color: var(--secondary-color);
+    padding-left: 3rem !important;
+}
+.transaction-details-cell ul {
+    margin: 0.5rem 0;
+}
+
+.delivery-item-row .delivery-category-select {
+    flex: 2;
+}
+.delivery-item-row .delivery-product-select {
+    flex: 3;
+}
+
+.complaint-card { border: 1px solid #eee; border-radius: 5px; padding: 1rem; margin-top: 1rem; }
+.complaint-card h3, .complaint-card h4 { margin-top: 0; }
+.complaint-description { width: 100%; min-height: 80px; margin-bottom: 0.5rem; }
+.complaint-actions { margin: 1rem 0; }
+
+.serial-number-display { color: #666; font-style: italic; }.btn-edit-serial { padding: 0.1rem 0.4rem; font-size: 0.7rem; margin-left: 10px; }
+
+#edit-patient-form input { width: calc(100% - 1rem); margin-bottom: 1rem; padding: 0.5rem; }
+
+.demo-info { font-size: 0.9em; color: #555; border-top: 1px dotted #ccc; margin-top: 8px; padding-top: 8px; }
+
+.status-demo { background-color: #6f42c1; color: white; }
+
+.adjustment-controls { display: inline-flex; align-items: center; gap: 0.5rem; margin-left: 1rem; }
+.adjustment-controls button { padding: 0.1rem 0.5rem; font-weight: bold; }
+.adjustment-value { font-weight: bold; min-width: 25px; text-align: center; }
+
+.toolbar { margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+
+.thumbnail-actions { text-align: center; }
+.download-link { font-size: 0.8rem; margin-left: 10px; }
+
+.audiogram-gallery { display: flex; flex-wrap: wrap; gap: 1rem; }
+.audiogram-thumbnail img { border: 1px solid #ccc; max-width: 200px; cursor: pointer; }
+.audiogram-thumbnail p { text-align: center; margin: 0.2rem 0; font-size: 0.8rem; }
+
+.danger-zone { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--danger-color); text-align: right; }
+
+.notes-section textarea { width: 100%; margin-bottom: 0.5rem; padding: 0.5rem; font-family: inherit; }
+.notes-section button { float: right; }
+.data-table th { background-color: var(--secondary-color); }
+
+.main-actions { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+
+/* Nowe statusy */
+.status-oczekuje { background-color: #17a2b8; color: white; }
+
+.status-actions { display: flex; align-items: center; gap: 1rem; }
+
+.modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; }
+.modal-content { background-color: white; padding: 2rem; border-radius: 8px; width: 500px; }
+.modal-content select { width: 100%; margin-bottom: 1rem; padding: 0.5rem; }
+
+.view-container {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    align-items: flex-start;
+}
