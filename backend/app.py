@@ -877,13 +877,23 @@ def get_transactions_for_month():
         return jsonify({'message': 'Brak parametru miesiąca.'}), 400
 
     db = get_db()
-    cursor = db.execute("""
+    cursor = db.execute(
+        """
         SELECT transakcja_id, data_transakcji, pacjent_imie, pacjent_nazwisko, kwota_laczna
         FROM Transakcje
         WHERE strftime('%Y-%m', data_transakcji) = ?
         ORDER BY data_transakcji DESC
-    """, (month,))
-    return jsonify([dict(row) for row in cursor.fetchall()])
+        """,
+        (month,)
+    )
+
+    summary_cursor = db.execute(
+        "SELECT SUM(kwota_laczna) as total FROM Transakcje WHERE strftime('%Y-%m', data_transakcji) = ?",
+        (month,)
+    )
+    total = summary_cursor.fetchone()["total"] or 0.0
+
+    return jsonify({"transactions": [dict(row) for row in cursor.fetchall()], "summary": {"total": total}})
 
 @app.route('/api/finances/transactions/<int:transaction_id>', methods=['GET'])
 def get_transaction_details(transaction_id):
