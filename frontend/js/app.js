@@ -132,6 +132,17 @@ const cancelAddComplaintBtn = document.getElementById('cancel-add-complaint-btn'
   }
 
   // === FUNKCJE DO ZARZĄDZANIA WIDOKAMI ===
+  function hideAllMainViews() {
+      [patientsViewContainer, warehouseViewContainer, financeViewContainer, financeHistoryViewContainer].forEach(container => {
+          container.classList.add('hidden');
+      });
+  }
+
+  function setActiveNav(button) {
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      if (button) button.classList.add('active');
+  }
+
   function showPatientsView() {
       warehouseViewContainer.classList.add('hidden');
       financeViewContainer.classList.add('hidden');
