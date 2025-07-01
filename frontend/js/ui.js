@@ -253,9 +253,9 @@ function renderFinanceView(summaries) {
  * Renderuje tabelę z listą transakcji w widoku finansowym.
  * @param {Array} transactions - Lista obiektów transakcji z API.
  */
-function renderTransactionsTable(transactions) {
-    // 1. Znajdź element tbody tabeli w dokumencie HTML.
-    const tableBody = document.getElementById('finance-transactions-table');
+function renderTransactionsTable(transactions, tableId = 'finance-transactions-table') {
+    // 1. Znajdź element tbody tabeli w dokumencie HTML (domyślnie główna tabela finansów).
+    const tableBody = document.getElementById(tableId);
     
     // 2. Wyczyść całą istniejącą zawartość tabeli.
     tableBody.innerHTML = '';
