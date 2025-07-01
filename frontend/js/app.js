@@ -76,6 +76,13 @@ const showAddComplaintFormBtn = document.getElementById('show-add-complaint-form
 const addComplaintFormContainer = document.getElementById('add-complaint-form-container');
 const addComplaintForm = document.getElementById('add-complaint-form');
 const cancelAddComplaintBtn = document.getElementById('cancel-add-complaint-btn');
+  // Ustawiamy zamykanie wszystkich modali przez przyciski "Anuluj"
+  document.querySelectorAll('.btn-cancel-modal').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const backdrop = btn.closest('.modal-backdrop');
+      if (backdrop) backdrop.classList.add('hidden');
+    });
+  });
 
 
   // === ZMIENNE STANU APLIKACJI ===
