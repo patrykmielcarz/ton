@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const addBatteriesForm = document.getElementById('add-batteries-form');
 const sellBatteryModal = document.getElementById('quick-sale-modal');
 const sellBatteryForm = document.getElementById('quick-sale-form');
+const cancelQuickSaleBtn = document.getElementById('cancel-quick-sale-btn');
 const navFinanceBtn = document.getElementById('nav-finance-btn');
 const financeViewContainer = document.getElementById('finance-view-container');
 const financeMonthSelector = document.getElementById('finance-month-selector');
@@ -519,6 +520,11 @@ if (e.target.name === 'pesel' && e.target.value.length === 11) {
       deliveryModal.classList.remove('hidden');
   });
   cancelDeliveryBtn.addEventListener('click', () => deliveryModal.classList.add('hidden'));
+  cancelQuickSaleBtn.addEventListener('click', () => {
+      sellBatteryModal.classList.add('hidden');
+      batterySaleInputs.classList.add('hidden');
+      genericSaleInputs.classList.add('hidden');
+  });
   addDeliveryItemBtn.addEventListener('click', createDeliveryRow);
 
   navFinanceBtn.addEventListener('click', showFinanceView);
