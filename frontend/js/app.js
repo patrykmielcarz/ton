@@ -131,22 +131,23 @@ const cancelAddComplaintBtn = document.getElementById('cancel-add-complaint-btn'
       });
   }
 
+  function hideAllMainViews() {
+      [patientsViewContainer, warehouseViewContainer, financeViewContainer, financeHistoryViewContainer].forEach(v => v.classList.add('hidden'));
+      [navPatientsBtn, navWarehouseBtn, navFinanceBtn, navFinanceHistoryBtn].forEach(btn => btn.classList.remove('active'));
+  }
+
   // === FUNKCJE DO ZARZĄDZANIA WIDOKAMI ===
   function showPatientsView() {
-      warehouseViewContainer.classList.add('hidden');
-      financeViewContainer.classList.add('hidden');
+      hideAllMainViews();
       patientsViewContainer.classList.remove('hidden');
-      navWarehouseBtn.classList.remove('active');
       navPatientsBtn.classList.add('active');
       hideAddPatientView();
       inventoryContainerEl.classList.add('hidden');
       patientDetailContainerEl.classList.add('hidden');
   }
   async function showWarehouseView() {
-      patientsViewContainer.classList.add('hidden');
-      financeViewContainer.classList.add('hidden');
+      hideAllMainViews();
       warehouseViewContainer.classList.remove('hidden');
-      navPatientsBtn.classList.remove('active');
       navWarehouseBtn.classList.add('active');
       await showOverallStockView(); // Domyślnie pokazujemy stan ogólny
   }
