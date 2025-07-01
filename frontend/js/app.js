@@ -139,10 +139,16 @@ const cancelAddComplaintBtn = document.getElementById('cancel-add-complaint-btn'
       });
   }
 
-  function hideAllMainViews() {
-      [patientsViewContainer, warehouseViewContainer, financeViewContainer, financeHistoryViewContainer].forEach(v => v.classList.add('hidden'));
-      [navPatientsBtn, navWarehouseBtn, navFinanceBtn, navFinanceHistoryBtn].forEach(btn => btn.classList.remove('active'));
-  }
+function hideAllMainViews() {
+    [patientsViewContainer, warehouseViewContainer, financeViewContainer, financeHistoryViewContainer].forEach(v => v.classList.add('hidden'));
+    [navPatientsBtn, navWarehouseBtn, navFinanceBtn, navFinanceHistoryBtn].forEach(btn => btn.classList.remove('active'));
+}
+
+function setActiveNav(button) {
+    [navPatientsBtn, navWarehouseBtn, navFinanceBtn, navFinanceHistoryBtn]
+        .forEach(btn => btn.classList.remove('active'));
+    if (button) button.classList.add('active');
+}
 
   // === FUNKCJE DO ZARZĄDZANIA WIDOKAMI ===
   function showPatientsView() {
