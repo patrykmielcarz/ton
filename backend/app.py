@@ -294,8 +294,12 @@ def create_patient():
                     _assign_product_to_patient(db, new_patient_id, ladowarka_info['produkt_id'])
         # --- KONIEC POPRAWKI ---
 
-        if data.get('sluchawka_id'):
-            _assign_product_to_patient(db, new_patient_id, data['sluchawka_id'], ilosc)
+        prawa_id = data.get('sluchawka_id_prawa')
+        lewa_id = data.get('sluchawka_id_lewa')
+        if prawa_id:
+            _assign_product_to_patient(db, new_patient_id, prawa_id, 1)
+        if lewa_id:
+            _assign_product_to_patient(db, new_patient_id, lewa_id, 1)
 
         db.commit()
         return jsonify({'message': 'Pacjent został pomyślnie dodany.', 'pacjent_id': new_patient_id}), 201
@@ -429,10 +433,31 @@ def get_structured_products():
 
 @app.route('/api/sluchawki-options/<producent>', methods=['GET'])
 def get_sluchawki_options(producent):
+    """Zwraca słuchawki danego producenta pogrupowane w pary (prawa/lewa)."""
     db = get_db()
     like_query = f"%Słuchawka {producent}%"
-    cursor = db.execute("SELECT produkt_id, nazwa FROM Produkty WHERE typ = 'Akcesorium' AND nazwa LIKE ?", (like_query,))
-    return jsonify([dict(row) for row in cursor.fetchall()])
+    cursor = db.execute(
+        "SELECT produkt_id, nazwa FROM Produkty WHERE typ = 'Akcesorium' AND nazwa LIKE ? ORDER BY nazwa",
+        (like_query,)
+    )
+
+    grouped = {}
+    for row in cursor.fetchall():
+        prod_id, name = row['produkt_id'], row['nazwa']
+        base = name.replace(' Prawa', '').replace(' Lewa', '')
+        if base not in grouped:
+            grouped[base] = {'nazwa': base, 'prawa_id': None, 'lewa_id': None}
+
+        if 'Prawa' in name:
+            grouped[base]['prawa_id'] = prod_id
+        elif 'Lewa' in name:
+            grouped[base]['lewa_id'] = prod_id
+        else:
+            # Jeśli w nazwie nie ma informacji o stronie, przypisz ten sam ID do obu
+            grouped[base]['prawa_id'] = grouped[base]['prawa_id'] or prod_id
+            grouped[base]['lewa_id'] = grouped[base]['lewa_id'] or prod_id
+
+    return jsonify(list(grouped.values()))
 
 # W pliku app.py - ZASTĄP TĘ FUNKCJĘ
 

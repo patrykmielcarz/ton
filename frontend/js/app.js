@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelSwapBtn = document.getElementById('cancel-swap-btn');
   const sluchawkiSection = document.getElementById('sluchawki-section');
   const sluchawkaSelect = document.getElementById('sluchawka-select');
+  const earSideRow = document.getElementById('ear-side-row');
+  const iloscInput = document.querySelector('input[name="ilosc_aparatow"]');
   const swapSluchawkaModal = document.getElementById('swap-sluchawka-modal');
   const swapSluchawkaForm = document.getElementById('swap-sluchawka-form');
   const cancelSwapSluchawkaBtn = document.getElementById('cancel-swap-sluchawka-btn');
@@ -77,6 +79,16 @@ const showAddComplaintFormBtn = document.getElementById('show-add-complaint-form
 const addComplaintFormContainer = document.getElementById('add-complaint-form-container');
 const addComplaintForm = document.getElementById('add-complaint-form');
 const cancelAddComplaintBtn = document.getElementById('cancel-add-complaint-btn');
+
+  function updateEarSideVisibility() {
+    if (sluchawkiSection.classList.contains('hidden')) {
+      earSideRow.classList.add('hidden');
+      return;
+    }
+    if (iloscInput.value === '1') earSideRow.classList.remove('hidden');
+    else earSideRow.classList.add('hidden');
+  }
+  iloscInput.addEventListener('input', updateEarSideVisibility);
   // Ustawiamy zamykanie wszystkich modali przez przyciski "Anuluj"
   document.querySelectorAll('.btn-cancel-modal').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -697,27 +709,44 @@ try {
           const selectedAparatId = e.target.value;
           if (!selectedAparatId) {
               sluchawkiSection.classList.add('hidden');
+              earSideRow.classList.add('hidden');
               return;
           }
           const sluchawkiOptions = await getSluchawkiOptions(firma);
           sluchawkaSelect.innerHTML = '<option value="">-- Wybierz słuchawkę --</option>';
           sluchawkiOptions.forEach(opt => {
-              sluchawkaSelect.add(new Option(opt.nazwa, opt.produkt_id));
+              const option = new Option(opt.nazwa, opt.nazwa);
+              option.dataset.prawaId = opt.prawa_id;
+              option.dataset.lewaId = opt.lewa_id;
+              sluchawkaSelect.add(option);
           });
           sluchawkiSection.classList.remove('hidden');
+          updateEarSideVisibility();
       }
   });
 
   addPatientForm.addEventListener('submit', async e => {
       e.preventDefault();
       const formData = new FormData(addPatientForm);
+      const ilosc = parseInt(formData.get('ilosc_aparatow'), 10);
+      const selectedOption = sluchawkaSelect.selectedOptions[0];
       const data = {
           imie: formData.get('imie'), nazwisko: formData.get('nazwisko'),
           telefon: formData.get('telefon'), pesel: formData.get('pesel'),
           data_urodzenia: formData.get('data_urodzenia'), aparat_id: formData.get('aparat'),
-          ilosc_aparatow: formData.get('ilosc_aparatow'), status_wnioskow: formData.get('status_wnioskow'),
-          sluchawka_id: formData.get('sluchawka'), is_demo: formData.get('is_demo') === 'on'
+          ilosc_aparatow: ilosc, status_wnioskow: formData.get('status_wnioskow'),
+          is_demo: formData.get('is_demo') === 'on'
       };
+
+      if (selectedOption) {
+          if (ilosc === 1) {
+              if (formData.get('ear_side') === 'prawa') data.sluchawka_id_prawa = selectedOption.dataset.prawaId;
+              else data.sluchawka_id_lewa = selectedOption.dataset.lewaId;
+          } else {
+              data.sluchawka_id_prawa = selectedOption.dataset.prawaId;
+              data.sluchawka_id_lewa = selectedOption.dataset.lewaId;
+          }
+      }
 
       // Walidacja daty urodzenia przed wysłaniem
       if (data.data_urodzenia === 'Nieprawidłowy PESEL') {
@@ -847,7 +876,12 @@ swapAparatForm.addEventListener('change', async (e) => {
       if (nowaFirma && nowaFirma !== currentPatientApparatBrand) {
           const sluchawkiOptions = await getSluchawkiOptions(nowaFirma);
           sluchawkaSelect.innerHTML = '<option value="">-- Wybierz nową słuchawkę --</option>';
-          sluchawkiOptions.forEach(opt => sluchawkaSelect.add(new Option(opt.nazwa, opt.produkt_id)));
+          sluchawkiOptions.forEach(opt => {
+              const o = new Option(opt.nazwa, opt.prawa_id);
+              o.dataset.prawaId = opt.prawa_id;
+              o.dataset.lewaId = opt.lewa_id;
+              sluchawkaSelect.add(o);
+          });
           sluchawkaSelect.required = true; // Włącz wymóg
           sluchawkaSection.classList.remove('hidden');
       } else {
@@ -1111,7 +1145,10 @@ btnDeleteConfirmNo.addEventListener('click', async () => {
 
                       // Krok 4: Wypełnij listę pobranymi opcjami
                       sluchawkiOptions.forEach(opt => {
-                          select.add(new Option(opt.nazwa, opt.produkt_id));
+                          const o = new Option(opt.nazwa, opt.prawa_id);
+                          o.dataset.prawaId = opt.prawa_id;
+                          o.dataset.lewaId = opt.lewa_id;
+                          select.add(o);
                       });
 
                       // Krok 5: Dopiero teraz pokaż modal
@@ -1220,5 +1257,6 @@ btnDeleteConfirmNo.addEventListener('click', async () => {
 
 
   // Start aplikacji
+  updateEarSideVisibility();
   init();
 });
