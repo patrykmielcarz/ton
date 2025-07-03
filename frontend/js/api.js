@@ -103,11 +103,11 @@ function swapAparat(patientId, swapData) { // Przyjmuje teraz jeden obiekt z dan
 async function getSluchawkiOptions(producent) {
   return await fetchAPI(`/sluchawki-options/${encodeURIComponent(producent)}`);
 }
-function swapSluchawki(patientId, newSluchawkaId) {
+function swapSluchawki(patientId, sluchawkiData) {
   return fetchAPI(`/patients/${patientId}/swap-sluchawki`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ new_sluchawka_id: newSluchawkaId })
+      body: JSON.stringify(sluchawkiData)
   });
 }
 
