@@ -191,14 +191,6 @@ dane_kompletne = {
     }
 }
 
-for kat in ["Słuchawki Bernafon", "Słuchawki Audibel"]:
-    sluchawki = dane_kompletne["firmy"]["Akcesoria"].get(kat, [])
-    rozszerzone = []
-    for item in sluchawki:
-        rozszerzone.append({"nazwa": f"{item['nazwa']} Prawa", "cena": item["cena"]})
-        rozszerzone.append({"nazwa": f"{item['nazwa']} Lewa", "cena": item["cena"]})
-    dane_kompletne["firmy"]["Akcesoria"][kat] = rozszerzone
-
 
 def create_and_import_data():
     conn = None
