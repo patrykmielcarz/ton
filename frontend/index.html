@@ -16,7 +16,6 @@
             <button id="nav-finance-btn" class="nav-btn">Finanse</button>
             <button id="nav-finance-history-btn" class="nav-btn">Historia</button>
         </nav>
-        </nav>
     </header>
 
     <main class="main-container">
@@ -63,6 +62,10 @@
                         <h3>Słuchawki</h3>
                         <div class="form-row">
                             <select name="sluchawka" id="sluchawka-select" required><option value="">Wybierz słuchawkę...</option></select>
+                        </div>
+                        <div class="form-row hidden" id="ear-side-row">
+                            <label><input type="radio" name="ear_side" value="prawa" checked> Prawy</label>
+                            <label><input type="radio" name="ear_side" value="lewa"> Lewy</label>
                         </div>
                     </div>
                     <hr>
@@ -187,7 +190,7 @@
         </div>
 
 
-        </main>
+    </main>
 
     <div id="swap-aparat-modal" class="modal-backdrop hidden">
         <div class="modal-content">
