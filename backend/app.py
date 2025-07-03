@@ -463,10 +463,17 @@ def get_sluchawki_options(producent):
 
 @app.route('/api/patients/<int:patient_id>/swap-aparat', methods=['POST'])
 def swap_aparat(patient_id):
-    """Obsługuje kompleksową logikę wymiany aparatów, warunkowo wymieniając słuchawki."""
+    """Wymienia aparaty pacjenta na nowy model.
+
+    Oprócz ``new_aparat_id`` można przekazać ``new_sluchawka_prawa_id`` i
+    ``new_sluchawka_lewa_id`` aby jednocześnie wymienić słuchawki. Jeśli pacjent
+    posiada dwie słuchawki, wymagane są oba ID. Gdy posiada jedną, użyte zostanie
+    ID odpowiadające stronie posiadanej słuchawki.
+    """
     data = request.json
     new_aparat_id = data.get('new_aparat_id')
-    new_sluchawka_id = data.get('new_sluchawka_id') # Może być None
+    new_sluchawka_prawa_id = data.get('new_sluchawka_prawa_id')
+    new_sluchawka_lewa_id = data.get('new_sluchawka_lewa_id')
     is_demo = data.get('is_demo', False)
 
     if not new_aparat_id:
@@ -485,11 +492,27 @@ def swap_aparat(patient_id):
         if stara_ladowarka:
             db.execute("UPDATE Magazyn SET status = 'Dostępny', pacjent_id = NULL WHERE item_id = ?", (stara_ladowarka['item_id'],))
 
-        # Jeśli podano nową słuchawkę (zmiana producenta), zwróć stare słuchawki
-        if new_sluchawka_id:
-            stare_sluchawki = db.execute("SELECT m.item_id FROM Magazyn m JOIN Produkty p ON m.produkt_id = p.produkt_id WHERE m.pacjent_id = ? AND p.nazwa LIKE 'Słuchawka%'", (patient_id,)).fetchall()
+        # Jeśli podano nowe słuchawki, zwróć stare i zapamiętaj ich strony
+        ilosc_sluchawki = 0
+        sluchawka_sides = []
+        if new_sluchawka_prawa_id or new_sluchawka_lewa_id:
+            stare_sluchawki = db.execute(
+                "SELECT m.item_id, p.nazwa FROM Magazyn m JOIN Produkty p ON m.produkt_id = p.produkt_id WHERE m.pacjent_id = ? AND p.nazwa LIKE 'Słuchawka%'",
+                (patient_id,)
+            ).fetchall()
+            ilosc_sluchawki = len(stare_sluchawki)
             for sluchawka in stare_sluchawki:
-                db.execute("UPDATE Magazyn SET status = 'Dostępny', pacjent_id = NULL WHERE item_id = ?", (sluchawka['item_id'],))
+                name = sluchawka['nazwa'].lower()
+                if 'prawa' in name:
+                    sluchawka_sides.append('P')
+                elif 'lewa' in name:
+                    sluchawka_sides.append('L')
+                else:
+                    sluchawka_sides.append(None)
+                db.execute(
+                    "UPDATE Magazyn SET status = 'Dostępny', pacjent_id = NULL WHERE item_id = ?",
+                    (sluchawka['item_id'],),
+                )
 
         # Zawsze zwracaj stare aparaty i zapisuj w historii
         for stary_aparat in stare_aparaty:
@@ -500,8 +523,27 @@ def swap_aparat(patient_id):
         typ_egzemplarza = 'Demo' if is_demo else 'Sprzedażowy'
         _assign_product_to_patient(db, patient_id, new_aparat_id, ilosc_do_wymiany, typ_egzemplarza)
 
-        if new_sluchawka_id: # Przypisz nowe słuchawki tylko jeśli zostały wybrane
-            _assign_product_to_patient(db, patient_id, new_sluchawka_id, ilosc_do_wymiany, 'Sprzedażowy')
+        # Przypisz nowe słuchawki zgodnie ze stronami
+        if ilosc_sluchawki == 2:
+            if not (new_sluchawka_prawa_id and new_sluchawka_lewa_id):
+                return jsonify({'message': 'Należy podać ID prawej i lewej słuchawki.'}), 400
+            _assign_product_to_patient(db, patient_id, new_sluchawka_prawa_id, 1, 'Sprzedażowy')
+            _assign_product_to_patient(db, patient_id, new_sluchawka_lewa_id, 1, 'Sprzedażowy')
+        elif ilosc_sluchawki == 1:
+            side = sluchawka_sides[0]
+            if side == 'P':
+                if not new_sluchawka_prawa_id:
+                    return jsonify({'message': 'Brak ID nowej prawej słuchawki.'}), 400
+                _assign_product_to_patient(db, patient_id, new_sluchawka_prawa_id, 1, 'Sprzedażowy')
+            elif side == 'L':
+                if not new_sluchawka_lewa_id:
+                    return jsonify({'message': 'Brak ID nowej lewej słuchawki.'}), 400
+                _assign_product_to_patient(db, patient_id, new_sluchawka_lewa_id, 1, 'Sprzedażowy')
+            else:
+                target_id = new_sluchawka_prawa_id or new_sluchawka_lewa_id
+                if not target_id:
+                    return jsonify({'message': 'Brak ID nowej słuchawki.'}), 400
+                _assign_product_to_patient(db, patient_id, target_id, 1, 'Sprzedażowy')
 
         # Przypisz nową ładowarkę, jeśli jest potrzebna
         nowy_aparat_produkt = db.execute("SELECT nazwa, producent FROM Produkty WHERE produkt_id = ?", (new_aparat_id,)).fetchone()
