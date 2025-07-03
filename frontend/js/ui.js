@@ -195,7 +195,8 @@ function renderOverallStock(warehouseData, isAdjustmentMode = false, adjustments
 
         console.log(`Produkt: "${item.nazwa}", Typ: "${item.typ}", Producent: "${item.producent}", Egzemplarz: "${item.typ_egzemplarza}"  =>  Przypisana kategoria: "${category}"`);
 
-        const displayName = `${item.producent} - ${item.nazwa} ${item.model || ''} <strong>(${item.typ_egzemplarza})</strong>`;
+        const sideText = item.side || item.strona ? ` (${item.side || item.strona})` : '';
+        const displayName = `${item.producent} - ${item.nazwa}${sideText} ${item.model || ''} <strong>(${item.typ_egzemplarza})</strong>`;
         
         let adjustmentControls = '';
         if (isAdjustmentMode) {
