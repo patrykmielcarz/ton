@@ -294,8 +294,11 @@ def create_patient():
                     _assign_product_to_patient(db, new_patient_id, ladowarka_info['produkt_id'])
         # --- KONIEC POPRAWKI ---
 
-        if data.get('sluchawka_id'):
-            _assign_product_to_patient(db, new_patient_id, data['sluchawka_id'], ilosc)
+        if data.get('sluchawka_prawa_id'):
+            _assign_product_to_patient(db, new_patient_id, data['sluchawka_prawa_id'], 1)
+
+        if data.get('sluchawka_lewa_id'):
+            _assign_product_to_patient(db, new_patient_id, data['sluchawka_lewa_id'], 1)
 
         db.commit()
         return jsonify({'message': 'Pacjent został pomyślnie dodany.', 'pacjent_id': new_patient_id}), 201
