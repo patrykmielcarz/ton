@@ -107,6 +107,7 @@ function updateEarSideVisibility() {
   let stockAdjustments = {};
   let lastWarehouseState = [];
   let currentPatientApparatBrand = null;
+  let currentSluchawkaCount = 0;
 
   // === FUNKCJE POMOCNICZE ===
   async function refreshPatientDetails() {
@@ -901,18 +902,24 @@ swapAparatForm.addEventListener('change', async (e) => {
 swapAparatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const sluchawkaSelect = document.getElementById('swap-sluchawka-select');
+  const selectedOption = sluchawkaSelect.selectedOptions[0];
+  const prawaId = selectedOption ? selectedOption.dataset.prawaId : null;
+  const lewaId = selectedOption ? selectedOption.dataset.lewaId : null;
   const swapData = {
       new_aparat_id: document.getElementById('swap-aparat-select').value,
       is_demo: e.target.elements.is_demo_swap.checked,
-      // Przekaż ID słuchawki tylko jeśli pole jest wymagane i ma wartość
-      new_sluchawka_id: sluchawkaSelect.required ? sluchawkaSelect.value : null
+      new_sluchawka_prawa_id: sluchawkaSelect.required ? prawaId : null,
+      new_sluchawka_lewa_id: sluchawkaSelect.required ? lewaId : null
   };
 
   if (!swapData.new_aparat_id) {
       return showToast('Proszę wybrać nowy aparat.', 'error');
   }
-  if (sluchawkaSelect.required && !swapData.new_sluchawka_id) {
+  if (sluchawkaSelect.required && !selectedOption) {
       return showToast('Musisz wybrać nową słuchawkę przy zmianie producenta.', 'error');
+  }
+  if (sluchawkaSelect.required && currentSluchawkaCount === 2 && (!prawaId || !lewaId)) {
+      return showToast('Musisz wybrać słuchawki dla obu stron.', 'error');
   }
 
   try {
@@ -929,17 +936,23 @@ swapAparatForm.addEventListener('submit', async (e) => {
   swapSluchawkaForm.addEventListener('submit', async (e) => {
   e.preventDefault(); // Zapobiegaj domyślnemu przeładowaniu strony
 
-  // Pobierz ID wybranej nowej słuchawki
-  const newSluchawkaId = document.getElementById('swap-sluchawka-select-single').value;
+  const select = document.getElementById('swap-sluchawka-select-single');
+  const selectedOption = select.selectedOptions[0];
+  const prawaId = selectedOption ? selectedOption.dataset.prawaId : null;
+  const lewaId = selectedOption ? selectedOption.dataset.lewaId : null;
 
-  // Sprawdź, czy coś zostało wybrane
-  if (!newSluchawkaId) {
+  if (!selectedOption) {
       return showToast('Proszę wybrać nową słuchawkę.', 'error');
+  }
+  if (currentSluchawkaCount === 2 && (!prawaId || !lewaId)) {
+      return showToast('Musisz wybrać słuchawki dla obu stron.', 'error');
   }
 
   try {
-      // Wywołaj funkcję API, aby dokonać wymiany na serwerze
-      const result = await swapSluchawki(activePatientId, newSluchawkaId);
+      const result = await swapSluchawki(activePatientId, {
+          new_sluchawka_prawa_id: prawaId,
+          new_sluchawka_lewa_id: lewaId
+      });
       showToast(result.message);
 
       // Ukryj modal i odśwież kartę pacjenta, aby pokazać zmiany
@@ -1107,11 +1120,12 @@ btnDeleteConfirmNo.addEventListener('click', async () => {
               await init();
               await refreshPatientDetails();
           }
-         else if (e.target.id === 'btn-show-swap-all-modal') {
-          // Zapamiętaj obecną markę aparatu pacjenta
-          const patientData = await getPatientDetails(activePatientId);
-          const currentAparat = patientData.sprzet.find(s => s.typ === 'Aparat');
-          currentPatientApparatBrand = currentAparat ? currentAparat.producent : null;
+        else if (e.target.id === 'btn-show-swap-all-modal') {
+         // Zapamiętaj obecną markę aparatu pacjenta i liczbę słuchawek
+         const patientData = await getPatientDetails(activePatientId);
+         const currentAparat = patientData.sprzet.find(s => s.typ === 'Aparat');
+         currentPatientApparatBrand = currentAparat ? currentAparat.producent : null;
+         currentSluchawkaCount = patientData.sprzet.filter(s => s.nazwa.includes('S\u0142uchawka')).length;
 
           // --- KLUCZOWA POPRAWKA JEST TUTAJ ---
           // Upewniamy się, że dane o strukturze produktów są załadowane, ZANIM otworzymy modal
@@ -1138,6 +1152,7 @@ btnDeleteConfirmNo.addEventListener('click', async () => {
               try {
                   // Krok 1: Pobierz aktualne dane pacjenta, aby znaleźć producenta jego aparatu
                   const patientData = await getPatientDetails(activePatientId);
+                  currentSluchawkaCount = patientData.sprzet.filter(s => s.nazwa.includes('S\u0142uchawka')).length;
                   const aparat = patientData.sprzet.find(s => s.typ === 'Aparat');
 
                   if (aparat) {
