@@ -308,6 +308,19 @@ document.getElementById('opis-wkladki-container').classList.add('hidden');
           });
       }
   }
+
+  // Wykorzystuje pogrupowane dane ze sluchawki-options
+  function populateSluchawkiGrouped(selectElement, options) {
+      selectElement.innerHTML = '<option value="">-- Wybierz nową słuchawkę --</option>';
+      options.forEach(opt => {
+          const left = opt.left_count ?? opt.left_available ?? opt.lewa ?? 0;
+          const right = opt.right_count ?? opt.right_available ?? opt.prawa ?? 0;
+          const name = opt.base || opt.nazwa;
+          const label = `${name} (L:${left} | P:${right})`;
+          const value = opt.produkt_id || opt.id;
+          selectElement.add(new Option(label, value));
+      });
+  }
   function createDeliveryRow() {
       const row = document.createElement('div');
       row.className = 'form-row delivery-item-row';
@@ -699,12 +712,9 @@ try {
               sluchawkiSection.classList.add('hidden');
               return;
           }
-          const sluchawkiOptions = await getSluchawkiOptions(firma);
-          sluchawkaSelect.innerHTML = '<option value="">-- Wybierz słuchawkę --</option>';
-          sluchawkiOptions.forEach(opt => {
-              sluchawkaSelect.add(new Option(opt.nazwa, opt.produkt_id));
-          });
-          sluchawkiSection.classList.remove('hidden');
+        const sluchawkiOptions = await getSluchawkiOptions(firma);
+        populateSluchawkiGrouped(sluchawkaSelect, sluchawkiOptions);
+        sluchawkiSection.classList.remove('hidden');
       }
   });
 
@@ -845,10 +855,9 @@ swapAparatForm.addEventListener('change', async (e) => {
 
       // Pokaż/ukryj wymianę słuchawek i DYNAMICZNIE zarządzaj atrybutem 'required'
       if (nowaFirma && nowaFirma !== currentPatientApparatBrand) {
-          const sluchawkiOptions = await getSluchawkiOptions(nowaFirma);
-          sluchawkaSelect.innerHTML = '<option value="">-- Wybierz nową słuchawkę --</option>';
-          sluchawkiOptions.forEach(opt => sluchawkaSelect.add(new Option(opt.nazwa, opt.produkt_id)));
-          sluchawkaSelect.required = true; // Włącz wymóg
+        const sluchawkiOptions = await getSluchawkiOptions(nowaFirma);
+        populateSluchawkiGrouped(sluchawkaSelect, sluchawkiOptions);
+        sluchawkaSelect.required = true; // Włącz wymóg
           sluchawkaSection.classList.remove('hidden');
       } else {
           sluchawkaSelect.required = false; // Wyłącz wymóg
@@ -1103,16 +1112,11 @@ btnDeleteConfirmNo.addEventListener('click', async () => {
 
                   if (aparat) {
                       // Krok 2: Pobierz z API listę słuchawek pasujących do tego producenta
-                      const sluchawkiOptions = await getSluchawkiOptions(aparat.producent);
+                    const sluchawkiOptions = await getSluchawkiOptions(aparat.producent);
 
-                      // Krok 3: Znajdź listę <select> w modalu i wyczyść ją
-                      const select = document.getElementById('swap-sluchawka-select-single');
-                      select.innerHTML = '<option value="">-- Wybierz nową słuchawkę --</option>';
-
-                      // Krok 4: Wypełnij listę pobranymi opcjami
-                      sluchawkiOptions.forEach(opt => {
-                          select.add(new Option(opt.nazwa, opt.produkt_id));
-                      });
+                    // Krok 3: Znajdź listę <select> w modalu i wyczyść ją
+                    const select = document.getElementById('swap-sluchawka-select-single');
+                    populateSluchawkiGrouped(select, sluchawkiOptions);
 
                       // Krok 5: Dopiero teraz pokaż modal
                       swapSluchawkaModal.classList.remove('hidden');
