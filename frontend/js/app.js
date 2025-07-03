@@ -80,7 +80,7 @@ const addComplaintFormContainer = document.getElementById('add-complaint-form-co
 const addComplaintForm = document.getElementById('add-complaint-form');
 const cancelAddComplaintBtn = document.getElementById('cancel-add-complaint-btn');
 
-  function updateEarSideVisibility() {
+function updateEarSideVisibility() {
     if (sluchawkiSection.classList.contains('hidden')) {
       earSideRow.classList.add('hidden');
       return;
@@ -151,18 +151,23 @@ const cancelAddComplaintBtn = document.getElementById('cancel-add-complaint-btn'
       });
   }
 
-function hideAllMainViews() {
+  function hideAllMainViews() {
     [patientsViewContainer, warehouseViewContainer, financeViewContainer, financeHistoryViewContainer].forEach(v => v.classList.add('hidden'));
     [navPatientsBtn, navWarehouseBtn, navFinanceBtn, navFinanceHistoryBtn].forEach(btn => btn.classList.remove('active'));
 }
 
-function setActiveNav(button) {
-    [navPatientsBtn, navWarehouseBtn, navFinanceBtn, navFinanceHistoryBtn]
-        .forEach(btn => btn.classList.remove('active'));
-    if (button) button.classList.add('active');
+  // === FUNKCJE DO ZARZĄDZANIA WIDOKAMI ===
+
+  function hideAllMainViews() {
+    [patientsViewContainer, warehouseViewContainer, financeViewContainer, financeHistoryViewContainer].forEach(container => {
+        container.classList.add('hidden');
+    });
 }
 
-  // === FUNKCJE DO ZARZĄDZANIA WIDOKAMI ===
+function setActiveNav(button) {
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (button) button.classList.add('active');
+}
   function showPatientsView() {
       hideAllMainViews();
       patientsViewContainer.classList.remove('hidden');
@@ -539,10 +544,10 @@ if (e.target.name === 'pesel' && e.target.value.length === 11) {
   });
   cancelDeliveryBtn.addEventListener('click', () => deliveryModal.classList.add('hidden'));
   cancelQuickSaleBtn.addEventListener('click', () => {
-      sellBatteryModal.classList.add('hidden');
-      batterySaleInputs.classList.add('hidden');
-      genericSaleInputs.classList.add('hidden');
-  });
+    sellBatteryModal.classList.add('hidden');
+    batterySaleInputs.classList.add('hidden');
+    genericSaleInputs.classList.add('hidden');
+});
   addDeliveryItemBtn.addEventListener('click', createDeliveryRow);
 
   navFinanceBtn.addEventListener('click', showFinanceView);
@@ -715,10 +720,10 @@ try {
           const sluchawkiOptions = await getSluchawkiOptions(firma);
           sluchawkaSelect.innerHTML = '<option value="">-- Wybierz słuchawkę --</option>';
           sluchawkiOptions.forEach(opt => {
-              const option = new Option(opt.nazwa, opt.nazwa);
-              option.dataset.prawaId = opt.prawa_id;
-              option.dataset.lewaId = opt.lewa_id;
-              sluchawkaSelect.add(option);
+            const option = new Option(opt.nazwa, opt.nazwa);
+            option.dataset.prawaId = opt.prawa_id;
+            option.dataset.lewaId = opt.lewa_id;
+            sluchawkaSelect.add(option);
           });
           sluchawkiSection.classList.remove('hidden');
           updateEarSideVisibility();
@@ -739,14 +744,14 @@ try {
       };
 
       if (selectedOption) {
-          if (ilosc === 1) {
-              if (formData.get('ear_side') === 'prawa') data.sluchawka_id_prawa = selectedOption.dataset.prawaId;
-              else data.sluchawka_id_lewa = selectedOption.dataset.lewaId;
-          } else {
-              data.sluchawka_id_prawa = selectedOption.dataset.prawaId;
-              data.sluchawka_id_lewa = selectedOption.dataset.lewaId;
-          }
-      }
+        if (ilosc === 1) {
+            if (formData.get('ear_side') === 'prawa') data.sluchawka_id_prawa = selectedOption.dataset.prawaId;
+            else data.sluchawka_id_lewa = selectedOption.dataset.lewaId;
+        } else {
+            data.sluchawka_id_prawa = selectedOption.dataset.prawaId;
+            data.sluchawka_id_lewa = selectedOption.dataset.lewaId;
+        }
+    }
 
       // Walidacja daty urodzenia przed wysłaniem
       if (data.data_urodzenia === 'Nieprawidłowy PESEL') {
@@ -877,11 +882,11 @@ swapAparatForm.addEventListener('change', async (e) => {
           const sluchawkiOptions = await getSluchawkiOptions(nowaFirma);
           sluchawkaSelect.innerHTML = '<option value="">-- Wybierz nową słuchawkę --</option>';
           sluchawkiOptions.forEach(opt => {
-              const o = new Option(opt.nazwa, opt.prawa_id);
-              o.dataset.prawaId = opt.prawa_id;
-              o.dataset.lewaId = opt.lewa_id;
-              sluchawkaSelect.add(o);
-          });
+            const o = new Option(opt.nazwa, opt.prawa_id);
+            o.dataset.prawaId = opt.prawa_id;
+            o.dataset.lewaId = opt.lewa_id;
+            sluchawkaSelect.add(o);
+        });
           sluchawkaSelect.required = true; // Włącz wymóg
           sluchawkaSection.classList.remove('hidden');
       } else {
@@ -1145,10 +1150,10 @@ btnDeleteConfirmNo.addEventListener('click', async () => {
 
                       // Krok 4: Wypełnij listę pobranymi opcjami
                       sluchawkiOptions.forEach(opt => {
-                          const o = new Option(opt.nazwa, opt.prawa_id);
-                          o.dataset.prawaId = opt.prawa_id;
-                          o.dataset.lewaId = opt.lewa_id;
-                          select.add(o);
+                        const o = new Option(opt.nazwa, opt.prawa_id);
+                        o.dataset.prawaId = opt.prawa_id;
+                        o.dataset.lewaId = opt.lewa_id;
+                        select.add(o);
                       });
 
                       // Krok 5: Dopiero teraz pokaż modal
